@@ -1,0 +1,10 @@
+__pycache__/
+.DS_Store
+demo_run/
+renders/
+media/
+*.mp4
+*.mov
+*.wav
+*.png
+*.jpg

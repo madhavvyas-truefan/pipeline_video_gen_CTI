@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "project": "example",
+  "frameRate": 24,
+  "resolution": [1080, 1350],
+  "inputs": {
+    "presenterStill": "media/presenter.png",
+    "audio": "media/voice.wav",
+    "script": "media/script.json",
+    "background": "brand/background.png"
+  },
+  "presenterProfile": {
+    "faceTarget": {"height": 210, "center": [532, 890]},
+    "despill": {"rWeight": 0.29, "bWeight": 0.71, "offset": 0.005, "greenCap": 0.012}
+  },
+  "chunks": [
+    {"id": "c1", "start": 0.0, "end": 8.0, "line": "First line", "overlap": 2.0},
+    {"id": "c2", "start": 8.0, "end": 16.0, "line": "Second line", "overlap": 2.0}
+  ],
+  "supers": [],
+  "qc": {
+    "maxJoinRisk": 0.20,
+    "maxGreenSpillPercent": 1.5,
+    "maxAvLagMs": 45
+  }
+}
