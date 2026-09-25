@@ -15,14 +15,11 @@ This repository provides the deterministic part of the workflow: input validatio
 
 ```bash
 python3 pipeline.py demo --out demo_run
-python3 pipeline.py validate demo_run/video_plan.json
-python3 pipeline.py timeline demo_run/video_plan.json --out demo_run/timeline.json
-python3 pipeline.py select demo_run/timeline.json demo_run/candidates.json --out demo_run/selection.json
-python3 pipeline.py joins demo_run/timeline.json demo_run/selection.json --out demo_run/joins.json
-python3 pipeline.py qc demo_run/video_plan.json demo_run/timeline.json demo_run/selection.json demo_run/joins.json --out demo_run/qc_report.json
+python3 run.py examples/video_plan.json examples/candidates.json --out demo_run
+make test
 ```
 
-The demo completes without network access or paid model credentials. It writes a timeline, ranked candidates, join bridge decisions, HTML review sheet, provenance record, encoder policy, and a passing QC report. A real run uses the same manifest shape with actual media paths and provider outputs.
+The demo completes without network access or paid model credentials. It writes a timeline, ranked candidates, join bridge decisions, HTML review sheet, provenance record, encoder policy, renderer handoff manifest, and a passing QC report. A real run uses the same manifest shape with actual media paths and provider outputs.
 
 ## Real workflow
 
@@ -33,5 +30,19 @@ The demo completes without network access or paid model credentials. It writes a
 5. Normalize accepted clips to the presenter profile and apply calibrated despill.
 6. Composite graphics from the timeline manifest.
 7. Run `qc` and `review`; delivery is blocked if any gate fails.
+
+## Run a real project
+
+```bash
+python3 pipeline.py validate /path/to/video_plan.json
+python3 run.py /path/to/video_plan.json /path/to/candidates.json --out runs/project-name
+open runs/project-name/join_review.html
+make encoders
+```
+
+`run.py` produces `renderer_handoff.json` only after validation. It makes no
+network call and never fabricates provider candidates. See
+[`docs/INPUT_CONTRACT.md`](docs/INPUT_CONTRACT.md) for the candidate schema and
+the AVFoundation renderer requirements.
 
 The audio timeline is authoritative. Chunk boundaries are frame-aligned at the declared frame rate, and each join carries a continuity decision instead of silently dissolving mismatched poses.

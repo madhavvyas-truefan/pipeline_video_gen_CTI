@@ -9,4 +9,10 @@ class PipelineTests(unittest.TestCase):
   x=json.loads((ROOT/"examples/video_plan.json").read_text());x["chunks"][1]["start"]=8.5
   with tempfile.TemporaryDirectory() as d:
    p=pathlib.Path(d)/"bad.json";p.write_text(json.dumps(x));self.assertNotEqual(subprocess.run(["python3","pipeline.py","validate",str(p)],cwd=ROOT).returncode,0)
+ def test_run_bundle_contains_renderer_handoff(self):
+  with tempfile.TemporaryDirectory() as d:
+   out=pathlib.Path(d)/"run"
+   subprocess.run(["python3","run.py","examples/video_plan.json","examples/candidates.json","--out",str(out)],cwd=ROOT,check=True)
+   handoff=json.loads((out/"renderer_handoff.json").read_text())
+   self.assertTrue(handoff["renderPolicy"]["allowDelivery"])
 if __name__=="__main__":unittest.main()
