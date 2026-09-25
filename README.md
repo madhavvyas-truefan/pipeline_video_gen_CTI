@@ -16,21 +16,22 @@ This repository provides the deterministic part of the workflow: input validatio
 ```bash
 python3 pipeline.py demo --out demo_run
 python3 pipeline.py validate demo_run/video_plan.json
-python3 pipeline.py plan demo_run/video_plan.json --out demo_run/plan.json
-python3 pipeline.py qc demo_run/video_plan.json --out demo_run/qc_report.json
+python3 pipeline.py timeline demo_run/video_plan.json --out demo_run/timeline.json
+python3 pipeline.py select demo_run/timeline.json demo_run/candidates.json --out demo_run/selection.json
+python3 pipeline.py joins demo_run/timeline.json demo_run/selection.json --out demo_run/joins.json
+python3 pipeline.py qc demo_run/video_plan.json demo_run/timeline.json demo_run/selection.json demo_run/joins.json --out demo_run/qc_report.json
 ```
 
-The demo completes without network access or paid model credentials and writes a valid plan plus QC report. A real run uses the same manifest shape with actual media paths and provider outputs.
+The demo completes without network access or paid model credentials. It writes a timeline, ranked candidates, join bridge decisions, HTML review sheet, provenance record, encoder policy, and a passing QC report. A real run uses the same manifest shape with actual media paths and provider outputs.
 
 ## Real workflow
 
 1. Create `video_plan.json` from the example in `examples/video_plan.json`.
 2. Run `validate` before generating anything.
-3. Generate overlapping provider candidates through the external-provider adapter.
-4. Run `plan` to choose safe boundaries and identify bridge candidates.
+3. Generate overlapping provider candidates through the external-provider adapter and write their measured metrics to `candidates.json`.
+4. Run `timeline`, `select`, and `joins` to choose safe boundaries and identify bridge candidates.
 5. Normalize accepted clips to the presenter profile and apply calibrated despill.
 6. Composite graphics from the timeline manifest.
-7. Run `qc`; delivery is blocked if any gate fails.
+7. Run `qc` and `review`; delivery is blocked if any gate fails.
 
 The audio timeline is authoritative. Chunk boundaries are frame-aligned at the declared frame rate, and each join carries a continuity decision instead of silently dissolving mismatched poses.
-
